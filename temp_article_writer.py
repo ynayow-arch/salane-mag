@@ -1,8 +1,68 @@
 from pathlib import Path
 import json
+import re
+from article_images import ensure_article_image
 
 base = Path(r'C:\Users\ynayo\시작 프로그램 코딩')
 repo2 = Path(r'C:\Users\ynayo\namhee-mag')
+
+
+def format_article(article, content):
+    lines = []
+    for line in content.splitlines():
+        if re.match(r'^\s*>?\s*\*\*(?:메타 설명|작성일|정보 기준 시점)\s*[:：]', line):
+            continue
+        line = re.sub(r'\*{0,2}따뜻한 마무리\s*:\*{0,2}\s*', '', line)
+        if re.match(r'^\s*>\s*\*\*한 줄 요약\s*[:：]', line):
+            continue
+        lines.append(line)
+
+    if not lines or not lines[0].startswith('# '):
+        raise ValueError(f"Article must start with an H1 title: {article['file']}")
+
+    body = []
+    humor = '유머' in article.get('category', '')
+    index = 1
+    while index < len(lines):
+        line = lines[index]
+        if humor and line.startswith('## 핵심 요약'):
+            next_index = index + 1
+            while next_index < len(lines) and not lines[next_index].strip():
+                next_index += 1
+            if next_index < len(lines) and lines[next_index].startswith('|'):
+                index = next_index
+                while index < len(lines) and lines[index].startswith('|'):
+                    index += 1
+                continue
+        if humor and line.startswith('|'):
+            while index < len(lines) and lines[index].startswith('|'):
+                index += 1
+            continue
+        body.append(line)
+        index += 1
+
+    paragraphs = re.split(r'\n\s*\n', '\n'.join(body).strip())
+    formatted = []
+    for paragraph in paragraphs:
+        if not paragraph.strip():
+            continue
+        first = paragraph.lstrip()
+        if first.startswith(('#', '>', '|', '-', '*')) or re.match(r'^\d+[.)]\s', first):
+            formatted.append(paragraph)
+            continue
+        if '**' not in paragraph:
+            punctuation = re.search(r'[,，。.!?！？]', paragraph)
+            end = punctuation.start() if punctuation else min(len(paragraph), 30)
+            phrase = paragraph[:end].strip()
+            if len(phrase) < 2:
+                phrase = paragraph[:30].strip()
+            formatted.append(f'**{phrase}**{paragraph[len(phrase):]}')
+        else:
+            formatted.append(paragraph)
+
+    summary = f"> **한 줄 요약:** {article['description']}"
+    return f"{lines[0]}\n\n{summary}\n\n" + '\n\n'.join(formatted).strip() + '\n'
+
 
 current_articles = [
     {
@@ -479,9 +539,11 @@ with open(repo2 / 'posts.json', 'w', encoding='utf-8') as f:
 
 for article in current_articles:
     path = base / article['file']
-    path.write_text(current_content[article['file']], encoding='utf-8')
+    path.write_text(format_article(article, current_content[article['file']]), encoding='utf-8')
+    ensure_article_image(path)
 for article in namhee_articles:
     path = repo2 / article['file']
-    path.write_text(namhee_content[article['file']], encoding='utf-8')
+    path.write_text(format_article(article, namhee_content[article['file']]), encoding='utf-8')
+    ensure_article_image(path)
 
 print('wrote all content and posts')
