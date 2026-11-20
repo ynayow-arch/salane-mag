@@ -10,6 +10,9 @@ from pathlib import Path
 
 
 TOPIC_QUERIES = (
+    ("에너지바우처", "energy voucher household winter subsidy"),
+    ("배추전", "Korean napa cabbage pancake"),
+    ("드라마", "television drama viewers living room"),
     ("김장", "kimchi preparation napa cabbage"),
     ("배추", "napa cabbage"),
     ("독감", "influenza vaccine"),
@@ -122,6 +125,12 @@ def _find_commons_image(title):
 def _local_illustration(title):
     if "양말" in title or "신발" in title:
         artwork = '<path d="M430 170h85v170l65 60q15 18-8 30H420q-20-10-10-32l20-48z" fill="#d77d6b"/><path d="M610 180h82v160l68 58q16 18-8 32H600q-19-10-9-33l19-47z" fill="#e2b34e"/><path d="M385 430q70-35 200 0l-20 54H365z" fill="#647c78"/><path d="M585 430q70-35 200 0l-20 54H565z" fill="#647c78"/>'
+    elif "에너지바우처" in title or "난방비" in title:
+        artwork = '<path d="M390 340l210-160 210 160v170H390z" fill="#e8d9c0"/><path d="M485 510V365h230v145" fill="#687c73"/><path d="M555 510V410h90v100" fill="#d9b469"/><path d="M600 285q-55-45 0-90 55 45 0 90zm0 42q-35-30 0-61 35 31 0 61zm-72-9q-37-22-9-54 42 17 9 54zm144 0q37-22 9-54-42 17-9 54z" fill="#d77d6b"/>'
+    elif "배추전" in title:
+        artwork = '<ellipse cx="600" cy="390" rx="270" ry="155" fill="#d8c8a9"/><ellipse cx="600" cy="370" rx="230" ry="120" fill="#fff8e8"/><path d="M440 385q20-92 112-40 68-88 132-24 70 70-12 118-94 45-232-54z" fill="#d8ab56"/><path d="M475 380q52-62 102-18m10-33q55-55 100-6" fill="none" stroke="#819777" stroke-width="18" stroke-linecap="round"/>'
+    elif "드라마" in title:
+        artwork = '<rect x="370" y="185" width="460" height="300" rx="26" fill="#647c78"/><rect x="400" y="215" width="400" height="240" rx="12" fill="#f3e7d4"/><circle cx="520" cy="315" r="44" fill="#d89c78"/><circle cx="675" cy="315" r="44" fill="#d9a080"/><path d="M455 435q10-96 130-96t130 96m-30 0q10-96 120-96t120 96" fill="#d77d6b"/><path d="M560 510h80m-40-25v25" stroke="#647c78" stroke-width="16" stroke-linecap="round"/>'
     elif "AI" in title:
         artwork = '<rect x="390" y="215" width="420" height="270" rx="24" fill="#647c78"/><rect x="420" y="245" width="360" height="200" rx="12" fill="#f3e7d4"/><path d="M520 510h160l35 34H485z" fill="#d77d6b"/><circle cx="600" cy="345" r="52" fill="#d9b469"/><path d="M600 275v-30m0 200v-30m70-70h30m-200 0h30" stroke="#647c78" stroke-width="16" stroke-linecap="round"/>'
     elif "용돈" in title or "증여세" in title:
